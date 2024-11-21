@@ -16,6 +16,10 @@ dev = [
     "ruff>=0.7.4",
 ]
 
+[tool.ruff]
+# Allow lines to be as long as 200.
+line-length = 200
+
 [tool.ruff.lint]
 select = [
     # pycodestyle
