@@ -32,9 +32,7 @@ class UpsamplingConv2d(nn.Module):
     ):
         super().__init__()
         self.scale = scale
-        self.conv = nn.Conv2d(
-            in_channels, out_channels, kernel_size, stride=stride, padding=padding
-        )
+        self.conv = nn.Conv2d(in_channels, out_channels, kernel_size, stride=stride, padding=padding)
 
     def __call__(self, x):
         x = self.conv(upsample_nearest(x, self.scale))
@@ -47,9 +45,7 @@ class Encoder(nn.Module):
     Maps input to latent space.
     """
 
-    def __init__(
-        self, image_shape: tuple[int, int, int], latent_dim: int, max_filters: int
-    ):
+    def __init__(self, image_shape: tuple[int, int, int], latent_dim: int, max_filters: int):
         """Initializes the encoder network.
 
         Args:
@@ -70,15 +66,11 @@ class Encoder(nn.Module):
         self.bn1 = nn.BatchNorm2d(n_filters_1)
 
         # (B, H/2, W/2, n_filters_1) -> (B, H/4, W/4, n_filters_2)
-        self.conv2 = nn.Conv2d(
-            n_filters_1, n_filters_2, kernel_size=3, stride=2, padding=1
-        )
+        self.conv2 = nn.Conv2d(n_filters_1, n_filters_2, kernel_size=3, stride=2, padding=1)
         self.bn2 = nn.BatchNorm2d(n_filters_2)
 
         # (B, H/4, W/4, n_filters_2) -> (B, H/8, W/8, n_filters_3)
-        self.conv3 = nn.Conv2d(
-            n_filters_2, n_filters_3, kernel_size=3, stride=2, padding=1
-        )
+        self.conv3 = nn.Conv2d(n_filters_2, n_filters_3, kernel_size=3, stride=2, padding=1)
         self.bn3 = nn.BatchNorm2d(n_filters_3)
 
         out_shape = (H // 8, W // 8, n_filters_3)
@@ -119,9 +111,7 @@ class Decoder(nn.Module):
     Maps latent space to output space.
     """
 
-    def __init__(
-        self, image_shape: tuple[int, int, int], latent_dim: int, max_filters: int
-    ):
+    def __init__(self, image_shape: tuple[int, int, int], latent_dim: int, max_filters: int):
         super().__init__()
 
         H, W, C = image_shape
@@ -137,21 +127,15 @@ class Decoder(nn.Module):
         self.proj = nn.Linear(latent_dim, flattened_dim)
 
         # (B, H/8, W/8, n_filters_3) -> (B, H/4, W/4, n_filters_2)
-        self.upconv1 = UpsamplingConv2d(
-            n_filters_3, n_filters_2, kernel_size=3, stride=1, padding=1
-        )
+        self.upconv1 = UpsamplingConv2d(n_filters_3, n_filters_2, kernel_size=3, stride=1, padding=1)
         self.bn1 = nn.BatchNorm2d(n_filters_2)
 
         # (B, H/4, W/4, n_filters_2) -> (B, H/2, W/2, n_filters_1)
-        self.upconv2 = UpsamplingConv2d(
-            n_filters_2, n_filters_1, kernel_size=3, stride=1, padding=1
-        )
+        self.upconv2 = UpsamplingConv2d(n_filters_2, n_filters_1, kernel_size=3, stride=1, padding=1)
         self.bn2 = nn.BatchNorm2d(n_filters_1)
 
         # (B, H/2, W/2, n_filters_1) -> (B, H, W, C)
-        self.upconv3 = UpsamplingConv2d(
-            n_filters_1, C, kernel_size=3, stride=1, padding=1
-        )
+        self.upconv3 = UpsamplingConv2d(n_filters_1, C, kernel_size=3, stride=1, padding=1)
 
     def __call__(self, z: mx.array):
         # (B, latent_dim) -> (B, n_filters_3 * H/8 * W/8)
@@ -175,9 +159,7 @@ class Decoder(nn.Module):
 class CVAE(nn.Module):
     """Convolutional Variational Autoencoder."""
 
-    def __init__(
-        self, image_shape: tuple[int, int, int], latent_dim: int, max_filters: int
-    ):
+    def __init__(self, image_shape: tuple[int, int, int], latent_dim: int, max_filters: int):
         super().__init__()
         self.latent_dim = latent_dim
         self.encoder = Encoder(image_shape, latent_dim, max_filters)
