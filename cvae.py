@@ -63,15 +63,15 @@ class Encoder(nn.Module):
 
         # (B, H, W, C) -> (B, H/2, W/2, n_filters_1)
         self.conv1 = nn.Conv2d(C, n_filters_1, kernel_size=3, stride=2, padding=1)
-        self.bn1 = nn.BatchNorm2d(n_filters_1)
+        self.bn1 = nn.BatchNorm(n_filters_1)
 
         # (B, H/2, W/2, n_filters_1) -> (B, H/4, W/4, n_filters_2)
         self.conv2 = nn.Conv2d(n_filters_1, n_filters_2, kernel_size=3, stride=2, padding=1)
-        self.bn2 = nn.BatchNorm2d(n_filters_2)
+        self.bn2 = nn.BatchNorm(n_filters_2)
 
         # (B, H/4, W/4, n_filters_2) -> (B, H/8, W/8, n_filters_3)
         self.conv3 = nn.Conv2d(n_filters_2, n_filters_3, kernel_size=3, stride=2, padding=1)
-        self.bn3 = nn.BatchNorm2d(n_filters_3)
+        self.bn3 = nn.BatchNorm(n_filters_3)
 
         out_shape = (H // 8, W // 8, n_filters_3)
         flattened_dim = out_shape[0] * out_shape[1] * out_shape[2]
@@ -128,11 +128,11 @@ class Decoder(nn.Module):
 
         # (B, H/8, W/8, n_filters_3) -> (B, H/4, W/4, n_filters_2)
         self.upconv1 = UpsamplingConv2d(n_filters_3, n_filters_2, kernel_size=3, stride=1, padding=1)
-        self.bn1 = nn.BatchNorm2d(n_filters_2)
+        self.bn1 = nn.BatchNorm(n_filters_2)
 
         # (B, H/4, W/4, n_filters_2) -> (B, H/2, W/2, n_filters_1)
         self.upconv2 = UpsamplingConv2d(n_filters_2, n_filters_1, kernel_size=3, stride=1, padding=1)
-        self.bn2 = nn.BatchNorm2d(n_filters_1)
+        self.bn2 = nn.BatchNorm(n_filters_1)
 
         # (B, H/2, W/2, n_filters_1) -> (B, H, W, C)
         self.upconv3 = UpsamplingConv2d(n_filters_1, C, kernel_size=3, stride=1, padding=1)
@@ -161,6 +161,9 @@ class CVAE(nn.Module):
 
     def __init__(self, image_shape: tuple[int, int, int], latent_dim: int, max_filters: int):
         super().__init__()
+
+        assert max_filters % 4 == 0, "max_filters must be divisible by 4"
+
         self.latent_dim = latent_dim
         self.encoder = Encoder(image_shape, latent_dim, max_filters)
         self.decoder = Decoder(image_shape, latent_dim, max_filters)
