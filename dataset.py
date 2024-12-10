@@ -60,12 +60,12 @@ def load_mnist(save_dir: str = None) -> tuple[dict[str, NDArray], dict[str, NDAr
     return mnist["train"], mnist["test"]
 
 
-def mnist(batch_size: int, image_shape: tuple[int, int, int]):
+def mnist(batch_size: int, image_shape: tuple[int, int]):
     """Returns the MNIST dataset.
 
     Args:
         batch_size (`int`): The batch size.
-        image_shape (`tuple`): The shape of the images (H, W, C).
+        image_shape (`tuple`): The shape of the images (H, W).
 
     Returns:
         A tuple containing the training and test dataloaders.

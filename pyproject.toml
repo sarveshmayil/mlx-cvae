@@ -8,6 +8,8 @@ dependencies = [
     "mlx-data",
     "mlx>=0.20.0",
     "safetensors>=0.4.5",
+    "tqdm>=4.67.1",
+    "pillow>=11.0.0",
 ]
 
 [dependency-groups]
